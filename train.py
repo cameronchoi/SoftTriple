@@ -80,7 +80,8 @@ def main():
     model = model.cuda()
 
     # define loss function (criterion) and optimizer
-    criterion = loss.SoftTriple(args.la, args.gamma, args.tau, args.margin, args.dim, args.C, args.K).cuda()
+    criterion = loss.SoftTriple(
+        args.la, args.gamma, args.tau, args.margin, args.dim, args.C, args.K).cuda()
     optimizer = torch.optim.Adam([{"params": model.parameters(), "lr": args.modellr},
                                   {"params": criterion.parameters(), "lr": args.centerlr}],
                                  eps=args.eps, weight_decay=args.weight_decay)
@@ -103,20 +104,23 @@ def main():
             normalize,
         ]))
 
+    test_dataset = datasets.ImageFolder(
+        testdir,
+        transforms.Compose([
+            transforms.Lambda(RGB2BGR),
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Lambda(lambda x: x.mul(255)),
+            normalize,
+        ]))
+
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=True)
 
     test_loader = torch.utils.data.DataLoader(
-        datasets.ImageFolder(testdir, transforms.Compose([
-            transforms.Lambda(RGB2BGR),
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Lambda(lambda x: x.mul(255)),
-            normalize,
-        ])),
-        batch_size=args.batch_size, shuffle=False,
+        testdir, batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=True)
 
     for epoch in range(args.start_epoch, args.epochs):
@@ -129,7 +133,7 @@ def main():
     # evaluate on validation set
     nmi, recall = validate(test_loader, model, args)
     print('Recall@1, 2, 4, 8: {recall[0]:.3f}, {recall[1]:.3f}, {recall[2]:.3f}, {recall[3]:.3f}; NMI: {nmi:.3f} \n'
-                  .format(recall=recall, nmi=nmi))
+          .format(recall=recall, nmi=nmi))
 
 
 def train(train_loader, model, criterion, optimizer, args):
@@ -169,13 +173,14 @@ def validate(test_loader, model, args):
             output = model(input)
             testdata = torch.cat((testdata, output.cpu()), 0)
             testlabel = torch.cat((testlabel, target))
-    nmi, recall = eva.evaluation(testdata.numpy(), testlabel.numpy(), [1, 2, 4, 8])
+    nmi, recall = eva.evaluation(
+        testdata.numpy(), testlabel.numpy(), [1, 2, 4, 8])
     return nmi, recall
 
 
 def adjust_learning_rate(optimizer, epoch, args):
     # decayed lr by 10 every 20 epochs
-    if (epoch+1)%20 == 0:
+    if (epoch+1) % 20 == 0:
         for param_group in optimizer.param_groups:
             param_group['lr'] *= args.rate
 
