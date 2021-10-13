@@ -120,7 +120,7 @@ def main():
         num_workers=args.workers, pin_memory=True)
 
     test_loader = torch.utils.data.DataLoader(
-        testdir, batch_size=args.batch_size, shuffle=True,
+        test_dataset, batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=True)
 
     for epoch in range(args.start_epoch, args.epochs):
