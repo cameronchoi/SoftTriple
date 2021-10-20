@@ -104,6 +104,9 @@ def main():
             normalize,
         ]))
 
+    train_dataset
+    
+
     test_dataset = datasets.ImageFolder(
         testdir,
         transforms.Compose([
@@ -173,6 +176,11 @@ def validate(test_loader, model, args):
             output = model(input)
             testdata = torch.cat((testdata, output.cpu()), 0)
             testlabel = torch.cat((testlabel, target))
+    print('----test------')
+    print(testdata)
+    print('-------')
+    print(testlabel)
+    print('---------------')
     nmi, recall = eva.evaluation(
         testdata.numpy(), testlabel.numpy(), [1, 2, 4, 8])
     return nmi, recall
