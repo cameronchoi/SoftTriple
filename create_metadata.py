@@ -13,8 +13,8 @@ for dir in os.listdir(train_dataset):
     print(dir)
     train_labels.append(dir)
     for filename in os.listdir(train_dataset + '/' + dir):
-        train_image_paths.append(train_dataset + '/' + dir + '/' + filename)
-        print(train_dataset + '/' + dir + '/' + filename)
+        train_image_paths.append(dir + '/' + filename)
+        print(dir + '/' + filename)
 
 with open(metadata_dir + '/' + train_dataset + '/image_paths.npy', 'wb') as f:
     np.save(f, train_image_paths)
@@ -31,8 +31,8 @@ for dir in os.listdir(test_dataset):
     print(dir)
     test_labels.append(dir)
     for filename in os.listdir(test_dataset + '/' + dir):
-        test_image_paths.append(test_dataset + '/' + dir + '/' + filename)
-        print(test_dataset + '/' + dir + '/' + filename)
+        test_image_paths.append(dir + '/' + filename)
+        print(dir + '/' + filename)
 
 with open(metadata_dir + '/' + test_dataset + '/image_paths.npy', 'wb') as f:
     np.save(f, test_image_paths)
