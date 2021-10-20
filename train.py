@@ -169,6 +169,8 @@ def validate(test_loader, model, args):
     testlabel = torch.LongTensor()
     with torch.no_grad():
         for i, (input, target) in enumerate(test_loader):
+            print(target)
+            print('-------------')
             if args.gpu is not None:
                 input = input.cuda(args.gpu, non_blocking=True)
 
@@ -176,11 +178,6 @@ def validate(test_loader, model, args):
             output = model(input)
             testdata = torch.cat((testdata, output.cpu()), 0)
             testlabel = torch.cat((testlabel, target))
-    print('----test------')
-    print(testdata)
-    print('-------')
-    print(testlabel)
-    print('---------------')
     nmi, recall = eva.evaluation(
         testdata.numpy(), testlabel.numpy(), [1, 2, 4, 8])
     return nmi, recall

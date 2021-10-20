@@ -4,6 +4,11 @@ import numpy as np
 
 
 def evaluation(X, Y, Kset):
+    print('----test------')
+    print(X)
+    print('-------')
+    print(Y)
+    print('---------------')
     num = X.shape[0]
     classN = np.max(Y)+1
     kmax = np.max(Kset)
